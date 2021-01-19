@@ -8,14 +8,18 @@ let pauseBetweenNotes = 0
 let note_duration = 0
 let which_protein = 0
 let i = 0
-let strip2: neopixel.Strip = null
+//let strip2: neopixel.Strip = null
 let strip: neopixel.Strip = null
 let pin_ledRNA = DigitalPin.P1
 let pin_ledDoors = DigitalPin.P8
 let pin_motors = DigitalPin.P12
 let pin_buttonLED = DigitalPin.P2
-strip = neopixel.create(pin_ledRNA, 10, NeoPixelMode.RGB)
-strip2 = neopixel.create(pin_ledDoors, 6, NeoPixelMode.RGB)
+let num_doors = 6
+let num_rna = 10
+let RNA_led_offset = num_doors
+
+strip = neopixel.create(pin_ledRNA, num_doors+num_rna, NeoPixelMode.RGB)
+//strip2 = neopixel.create(pin_ledDoors, 6, NeoPixelMode.RGB)
 let increment = 20
 let dispensed_protein = 1
 
@@ -38,27 +42,39 @@ function Glissanto (note1: number, note2: number, rate: number) {
     }
     music.rest(0)
 }
+function strip_doors_clear(){
+    for (let i=0; i<num_doors;i++){
+        strip.setPixelColor(i, (0,0,0));
+    }
+    strip.show();
+}
+function strip_rna_clear(){
+    for(let i=num_doors; i<num_doors+num_rna;i++){
+        strip.setPixelColor(i, (0,0,0))    
+    }
+}
+
 function dispense_protein () {
-    which_protein = Math.randomRange(0, strip2.length() - 1)
-    strip2.setPixelColor(which_protein, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
-    strip2.setPixelColor(Math.abs((which_protein - 1) % strip2.length()), neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
-    strip2.show()
-    for (let index4 = 0; index4 <= 9 * strip2.length() - 1; index4++) {
-        strip2.rotate(1)
-        strip2.show()
+    which_protein = Math.randomRange(0, num_doors - 1)
+    strip.setPixelColor(which_protein, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+    strip.setPixelColor(Math.abs((which_protein - 1) % num_doors), neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+    strip.show()
+    for (let index4 = 0; index4 <= 9 * num_doors - 1; index4++) {
+        strip.rotate(1)
+        strip.show()
         music.ringTone(index4 * index4)
         control.waitMicros(index4 * 7000)
     }
-    strip2.clear()
-    strip2.setPixelColor(which_protein, neopixel.colors(NeoPixelColors.Green))
-    strip2.show()
+    strip_doors_clear()
+    strip.setPixelColor(which_protein, neopixel.colors(NeoPixelColors.Green))
+    strip.show()
     success_sound()
     control.waitMicros(6000000)
-    strip.clear()
+    strip_doors_clear()
     strip.show()
     control.waitMicros(2000000)
-    strip2.clear()
-    strip2.show()
+    strip_rna_clear()
+    strip.show()
 }
 
 function angry_Dave_sound () {
@@ -208,16 +224,16 @@ basic.forever(function () {
     cog_voltage = pins.analogReadPin(AnalogPin.P4)
     control.waitMicros(1000)
     if (Dave_state == 0) {
-        strip.clear()
+        strip_doors_clear()
         strip.show()
         cog_average = 0
         pins.digitalWritePin(DigitalPin.P2, 1)
         if (cog_voltage < 20) {
             pins.digitalWritePin(DigitalPin.P2, 0)
             strip.clear()
-            strip2.clear()
+            //strip2.clear()
             strip.show()
-            strip2.show()
+            //strip2.show()
             Dave_state = 1
             cog_average_before = 20
         }
@@ -225,7 +241,7 @@ basic.forever(function () {
         cog_average += (cog_voltage - cog_average) * 0.7
         which_LED = Math.round(Math.map(cog_average, 0, 1023, 0, strip.length() + 2))
         for (let index5 = 0; index5 <= which_LED; index5++) {
-            strip.setPixelColor(index5, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+            strip.setPixelColor(index5+RNA_led_offset, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
         }
         strip.show()
         if (cog_average > cog_average_before + increment) {
