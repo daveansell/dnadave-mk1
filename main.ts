@@ -18,6 +18,9 @@ let num_doors = 6
 let num_rna = 10
 let RNA_led_offset = num_doors
 
+pins.setPull(DigitalPin.P2, PinPullMode.PullUp)
+pins.setPull(DigitalPin.P3, PinPullMode.PullUp)
+
 strip = neopixel.create(pin_ledRNA, num_doors+num_rna, NeoPixelMode.RGB)
 //strip2 = neopixel.create(pin_ledDoors, 6, NeoPixelMode.RGB)
 let increment = 20
@@ -131,8 +134,8 @@ input.onButtonPressed(Button.A, function () {
 
 })
 
-//control.onEvent(EventBusSource.MICROBIT_ID_IO_P2, EventBusValue.MICROBIT_PIN_EVT_FALL, function () { 
-input.onButtonPressed(Button.B, function () {
+control.onEvent(EventBusSource.MICROBIT_ID_IO_P2, EventBusValue.MICROBIT_PIN_EVT_FALL, function () { 
+//input.onButtonPressed(Button.B, function () {
     redArmpitButtonSound()
     control.waitMicros(1000)
         strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Green));
@@ -141,14 +144,16 @@ input.onButtonPressed(Button.B, function () {
 
 })
 //control.onEvent(EventBusSource.MICROBIT_ID_IO_P3, EventBusValue.MICROBIT_PIN_EVT_FALL, function () { 
-input.onPinPressed(TouchPin.P2, function () {
+//input.onPinPressed(TouchPin.P2, function () {
+input.onButtonPressed(Button.A, function () {
+
     // Big red button
     pins.digitalWritePin(pin_motors,1)
     pins.digitalWritePin(pin_buttonLED,1)
     let v=0
     strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Blue));
     strip.show();
-        control.waitMicros(1000000)
+        control.waitMicros(5000000)
     for(i==0;i<20;i++){
         if(v==0){
             v=1
