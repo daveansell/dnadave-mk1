@@ -19,7 +19,7 @@ let num_rna = 10
 let RNA_led_offset = num_doors
 
 pins.setPull(DigitalPin.P2, PinPullMode.PullUp)
-pins.setPull(DigitalPin.P3, PinPullMode.PullUp)
+pins.setPull(DigitalPin.P5, PinPullMode.PullUp)
 
 strip = neopixel.create(pin_ledRNA, num_doors+num_rna, NeoPixelMode.RGB)
 //strip2 = neopixel.create(pin_ledDoors, 6, NeoPixelMode.RGB)
@@ -125,7 +125,7 @@ function redArmpitButtonSound () {
     }
 }
 
-input.onButtonPressed(Button.A, function () {
+input.onButtonPressed(Button.B, function () {
     greenArmpitButtonSound()
     control.waitMicros(1000)
     strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Red));
@@ -134,7 +134,7 @@ input.onButtonPressed(Button.A, function () {
 
 })
 
-control.onEvent(EventBusSource.MICROBIT_ID_IO_P2, EventBusValue.MICROBIT_PIN_EVT_FALL, function () { 
+control.onEvent(EventBusSource.MICROBIT_ID_IO_P5, EventBusValue.MICROBIT_PIN_EVT_FALL, function () { 
 //input.onButtonPressed(Button.B, function () {
     redArmpitButtonSound()
     control.waitMicros(1000)
