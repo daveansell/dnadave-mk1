@@ -58,8 +58,8 @@ function Glissanto (note1: number, note2: number, rate: number) {
 }
 function dispense_protein () {
     which_protein = Math.randomRange(0, num_doors - 1)
-    strip.setPixelColor(which_protein, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
-    strip.setPixelColor(Math.abs((which_protein - 1) % num_doors), neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+    strip.setPixelColor(door_offset+which_protein, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+    strip.setPixelColor(door_offset+Math.abs((which_protein - 1) % num_doors), neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
     strip.show()
     for (let index4 = 0; index4 <= 9 * num_doors - 1; index4++) {
         strip.rotate(1)
@@ -70,7 +70,7 @@ function dispense_protein () {
         }
     }
     strip_doors_clear()
-    strip.setPixelColor(which_protein, neopixel.colors(NeoPixelColors.Green))
+    strip.setPixelColor(door_offset+which_protein, neopixel.colors(NeoPixelColors.Green))
     strip.show()
     success_sound()
     if (waitForInput(6000000)) {
@@ -100,7 +100,7 @@ function angry_Dave_sound () {
 }
 function strip_doors_clear () {
     for (let j = 0; j <= num_doors - 1; j++) {
-        strip.setPixelColor(j, neopixel.rgb(0,0,0))
+        strip.setPixelColor(door_offset+j, neopixel.rgb(0,0,0))
     }
     strip.show()
 }
@@ -129,8 +129,7 @@ function doBigButton () {
  //   control.waitMicros(1000000)
     pins.digitalWritePin(pin_motors,1)
     pins.digitalWritePin(pin_buttonLED,1)
-    strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Blue))
-    strip.show()
+   
     if (waitForInput(5000000)) {
         pins.digitalWritePin(pin_motors,0)
         return true
@@ -402,7 +401,7 @@ function strip_rna_clear () {
 let which_LED = 0
 let cog_average_before = 0
 let cog_average = 0
-let Dave_state = 0
+let Dave_state = 8
 let cog_voltage = 0
 let rand = 0
 let pauseBetweenNotes = 0
@@ -419,7 +418,8 @@ let pin_motors = DigitalPin.P12
 let pin_buttonLED = DigitalPin.P8
 num_doors = 6
 let num_rna = 10
-let RNA_led_offset = num_doors
+let RNA_led_offset = 0
+let door_offset= num_rna
 pins.setPull(DigitalPin.P2, PinPullMode.PullUp)
 pins.setPull(DigitalPin.P5, PinPullMode.PullUp)
 pins.setPull(DigitalPin.P11, PinPullMode.PullUp)
@@ -432,9 +432,14 @@ let pinBigButton = DigitalPin.P5;
 let pinLeftArmPit = DigitalPin.P2;
 let pinRightArmPit = DigitalPin.P11;
 serial.writeLine("Started")
+
+let maxPotValue = 870;
+let minPotValue = 345;
 basic.forever(function () {
-    cog_voltage = pins.analogReadPin(AnalogPin.P4)
+    cog_voltage = maxPotValue - pins.analogReadPin(AnalogPin.P4)
     waitForInput(1000)
+    serial.writeNumber(cog_voltage);
+    serial.writeString("\n\r")
     basic.showNumber(Dave_state);
     if (Dave_state == 0) {
         strip_doors_clear()
@@ -447,14 +452,14 @@ basic.forever(function () {
             // strip2.clear()
             strip.show()
             // strip2.show()
-            Dave_state = 1
+            Dave_state = 8
             cog_average_before = 20
         }
     } else if (Dave_state == 1) {
         cog_average += (cog_voltage - cog_average) * 0.7
         which_LED = Math.round(Math.map(cog_average, 0, 1023, 0, strip.length() + 2))
         for (let index5 = 0; index5 <= which_LED; index5++) {
-            strip.setPixelColor(index5 + RNA_led_offset, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
+            strip.setPixelColor(index5, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
         }
         strip.show()
         if (cog_average > cog_average_before + increment) {
@@ -462,7 +467,7 @@ basic.forever(function () {
         } else if (cog_average < cog_average_before - increment) {
             Dave_state = 2
         }
-        if (cog_average > 740) {
+        if (cog_average > 520){//740) {
             Dave_state = 3
         }
     } else if (Dave_state == 2) {
@@ -476,6 +481,7 @@ basic.forever(function () {
         strip.show()
     }
     if (currentButtons[0]) {
+        Dave_state=0
         doBigButton()
     } else if (currentButtons[1]) {
         doLeftArmpit()
