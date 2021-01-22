@@ -128,10 +128,11 @@ function doBigButton () {
  //   strip.show()
  //   control.waitMicros(1000000)
     pins.digitalWritePin(pin_motors,1)
-    pins.digitalWritePin(pin_buttonLED,1)
+    pins.digitalWritePin(pin_buttonLED,0)
    
     if (waitForInput(5000000)) {
         pins.digitalWritePin(pin_motors,0)
+        pins.digitalWritePin(pin_buttonLED,1);
         return true
     }
     for(i==0;i<20;i++){
@@ -143,10 +144,11 @@ function doBigButton () {
         pins.digitalWritePin(pin_buttonLED,v)
         if(waitForInput(200000)){
             pins.digitalWritePin(pin_motors,0);
+            pins.digitalWritePin(pin_buttonLED,1);
             return true;
         }
     }
-    pins.digitalWritePin(pin_buttonLED,0);
+    pins.digitalWritePin(pin_buttonLED,1);
     pins.digitalWritePin(pin_motors,0);
     return false
 }
@@ -433,7 +435,7 @@ let pinLeftArmPit = DigitalPin.P2;
 let pinRightArmPit = DigitalPin.P11;
 serial.writeLine("Started")
 
-let maxPotValue = 870;
+let maxPotValue = 875;
 let minPotValue = 345;
 basic.forever(function () {
     cog_voltage = maxPotValue - pins.analogReadPin(AnalogPin.P4)
@@ -452,7 +454,7 @@ basic.forever(function () {
             // strip2.clear()
             strip.show()
             // strip2.show()
-            Dave_state = 8
+            Dave_state = 1
             cog_average_before = 20
         }
     } else if (Dave_state == 1) {
