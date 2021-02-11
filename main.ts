@@ -69,7 +69,8 @@ function dispense_protein () {
             return true
         }
     }
-    strip_doors_clear()
+    strip.clear()
+    strip.show()
     strip.setPixelColor(door_offset+which_protein, neopixel.colors(NeoPixelColors.Green))
     strip.show()
     success_sound()
@@ -428,6 +429,8 @@ pins.setPull(DigitalPin.P2, PinPullMode.PullUp)
 pins.setPull(DigitalPin.P5, PinPullMode.PullUp)
 pins.setPull(DigitalPin.P11, PinPullMode.PullUp)
 strip = neopixel.create(pin_ledRNA, num_doors+num_rna, NeoPixelMode.RGB)
+strip.clear();
+strip.show();
 // strip2 = neopixel.create(pin_ledDoors, 6, NeoPixelMode.RGB)
 let increment = 20
 let dispensed_protein = 1
@@ -437,31 +440,41 @@ let pinLeftArmPit = DigitalPin.P2;
 let pinRightArmPit = DigitalPin.P11;
 serial.writeLine("Started")
 
+let cog_minimum = 0;
 let maxPotValue = 875;
 let minPotValue = 345;
+let maxValue = 400;
+
 basic.forever(function () {
     cog_voltage = maxPotValue - pins.analogReadPin(AnalogPin.P4)
     waitForInput(1000)
     serial.writeNumber(cog_voltage);
-    serial.writeString("\n\r")
-    basic.showNumber(Dave_state);
+    serial.writeString(" min")
+    if(cog_voltage < cog_minimum){
+        cog_minimum = cog_voltage;
+    }
+    serial.writeNumber(cog_minimum);
+    serial.writeString(" stat");
+  //  basic.showNumber(Dave_state);
     if (Dave_state == 0) {
         strip_doors_clear()
         strip.show()
         cog_average = 0
         pins.digitalWritePin(DigitalPin.P2, 1)
-        if (cog_voltage < 20) {
+        if (cog_voltage < cog_minimum+20) {
             pins.digitalWritePin(DigitalPin.P2, 0)
             strip.clear()
             // strip2.clear()
             strip.show()
             // strip2.show()
             Dave_state = 1
-            cog_average_before = 20
+            cog_average_before = -100
         }
     } else if (Dave_state == 1) {
         cog_average += 0.7 * (cog_voltage - cog_average) 
-        which_LED = Math.round(Math.map(cog_average, 0, 1023, 0, strip.length() + 2))
+            serial.writeNumber(cog_average);
+
+        which_LED = Math.round(Math.map(cog_average-cog_minimum, 0, 1023, 0, strip.length() + 2))
         for (let index5 = 0; index5 <= which_LED; index5++) {
             strip.setPixelColor(index5, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
         }
@@ -471,8 +484,14 @@ basic.forever(function () {
         } else if (cog_average < cog_average_before - increment) {
             Dave_state = 2
         }
-        if (cog_average > 520){//740) {
+        if (cog_average > maxValue - 20){//740) {
             Dave_state = 3
+        }
+        if(cog_average>cog_average_before){
+            cog_average_before = cog_average;
+        }
+        if(cog_average>maxValue){
+            maxValue = cog_average;
         }
     } else if (Dave_state == 2) {
         angry_Dave_sound()
@@ -495,4 +514,6 @@ basic.forever(function () {
         serial.writeLine("right button")
         doRightArmpit()
     }
+    serial.writeNumber(Dave_state);
+    serial.writeString(".\n\r")
 })
