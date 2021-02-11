@@ -25,7 +25,7 @@ function checkButtons () {
 function doRightArmpit () {
     strip.setPixelColor(1, neopixel.colors(NeoPixelColors.Purple))
     strip.show()
-    control.waitMicros(1000000)
+   // control.waitMicros(1000000)
     // if(waitForInput(1000000)){return true;}
     redArmpitButtonSound()
     if (control.waitMicros(1000)) {
@@ -76,13 +76,14 @@ function dispense_protein () {
     if (waitForInput(6000000)) {
         return true
     }
-    strip_doors_clear()
+    strip_rna_clear()
     strip.show()
     if (waitForInput(2000000)) {
         return true
     }
     strip_rna_clear()
     strip.show()
+    music.stopAllSounds();
     return false
 }
 function angry_Dave_sound () {
@@ -94,8 +95,10 @@ function angry_Dave_sound () {
             }
         }
     }
-    music.rest(music.beat(BeatFraction.Whole))
-    music.stopMelody(MelodyStopOptions.All)
+   // music.rest(music.beat(BeatFraction.Whole))
+    music.stopAllSounds();
+
+    //music.stopMelody(MelodyStopOptions.All)
     return false
 }
 function strip_doors_clear () {
@@ -153,14 +156,10 @@ function doBigButton () {
     return false
 }
 function doLeftArmpit () {
-//    control.waitMicros(1000000)
-//    strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Red))
-//    strip.show()
     greenArmpitButtonSound()
     if (waitForInput(1000)) {
         return true
     }
-    // if(waitForInput(1000000)){return true;}
     return false
 }
 function redArmpitButtonSound () {
@@ -219,6 +218,7 @@ function redArmpitButtonSound () {
             return true
         }
     }
+    music.stopAllSounds();
     return false
 }
 function greenArmpitButtonSound () {
@@ -377,6 +377,8 @@ function greenArmpitButtonSound () {
             return true
         }
     }
+    music.stopAllSounds();
+
     return false
 }
 function success_sound () {
@@ -389,7 +391,7 @@ function success_sound () {
         }
     }
     music.rest(music.beat(BeatFraction.Whole))
-    music.stopMelody(MelodyStopOptions.All)
+    music.stopAllSounds();
     return false
 }
 function strip_rna_clear () {
@@ -484,10 +486,13 @@ basic.forever(function () {
     }
     if (currentButtons[0]) {
         Dave_state=0
+        serial.writeLine("big button")
         doBigButton()
     } else if (currentButtons[1]) {
+        serial.writeLine("big button")
         doLeftArmpit()
     } else if (currentButtons[2]) {
+        serial.writeLine("big button")
         doRightArmpit()
     }
 })
