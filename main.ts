@@ -1,26 +1,27 @@
 function checkButtons () {
-    if (!(pins.digitalReadPin(pinBigButton))) {
+    let ret=false;
+    if (!(pins.digitalReadPin(pinBigButton) && !currentButtons[0])) {
         currentButtons[0] = true
-
-    } else {
+            ret=true;
+    } else if(pins.digitalReadPin(pinBigButton)) {
         currentButtons[0] = false
     }
-    if (!(pins.digitalReadPin(pinLeftArmPit))) {
+    if (!(pins.digitalReadPin(pinLeftArmPit) && !currentButtons[1])) {
         currentButtons[1] = true
+        ret = true;
 
-    } else {
+    } else if(pins.digitalReadPin(pinLeftArmPit)){
         currentButtons[1] = false
     }
-    if (!(pins.digitalReadPin(pinRightArmPit))) {
+    if (!(pins.digitalReadPin(pinRightArmPit)) && !currentButtons[2]) {
         currentButtons[2] = true
-
-    } else {
+        ret=true;
+    } else if(pins.digitalReadPin(pinLeftArmPit)){
         currentButtons[2] = false
     }
-    if (currentButtons[0] == true || currentButtons[1] == true || currentButtons[2] == true) {
-        return true
-    }
-    return false
+    
+    
+    return ret;
 }
 function doRightArmpit () {
     strip.setPixelColor(1, neopixel.colors(NeoPixelColors.Purple))
