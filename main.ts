@@ -102,7 +102,7 @@ function angry_Dave_sound () {
     return false
 }
 function strip_doors_clear () {
-    for (let j = 0; j <= num_doors - 1; j++) {
+    for (let j = door_offset; j <= door_offset+num_doors; j++) {
         strip.setPixelColor(door_offset+j, neopixel.rgb(0,0,0))
     }
     strip.show()
@@ -395,7 +395,7 @@ function success_sound () {
     return false
 }
 function strip_rna_clear () {
-    for(let k=num_doors; k<num_doors+num_rna;k++){
+    for(let k=0; k<num_rna;k++){
         strip.setPixelColor(k, (0,0,0))    
     }
 }
@@ -460,7 +460,7 @@ basic.forever(function () {
             cog_average_before = 20
         }
     } else if (Dave_state == 1) {
-        cog_average += (cog_voltage - cog_average) * 0.7
+        cog_average += 0.7 * (cog_voltage - cog_average) 
         which_LED = Math.round(Math.map(cog_average, 0, 1023, 0, strip.length() + 2))
         for (let index5 = 0; index5 <= which_LED; index5++) {
             strip.setPixelColor(index5, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
@@ -489,10 +489,10 @@ basic.forever(function () {
         serial.writeLine("big button")
         doBigButton()
     } else if (currentButtons[1]) {
-        serial.writeLine("big button")
+        serial.writeLine("left button")
         doLeftArmpit()
     } else if (currentButtons[2]) {
-        serial.writeLine("big button")
+        serial.writeLine("right button")
         doRightArmpit()
     }
 })
