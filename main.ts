@@ -1,31 +1,41 @@
+// check if any buttons have been pressed 
+// if so set the array and return true if it is a change
+// this should cause any parent function to drop out
 function checkButtons () {
-    let ret=false;
-    if (!(pins.digitalReadPin(pinBigButton) && !currentButtons[0])) {
+    let ret = false;
+    if (!(pins.digitalReadPin(pinBigButton))) {
+        if(!currentButtons[0]){
+            ret = true;
+        }
         currentButtons[0] = true
-            ret=true;
-    } else if(pins.digitalReadPin(pinBigButton)) {
+        
+            
+    } else {
         currentButtons[0] = false
     }
-    if (!(pins.digitalReadPin(pinLeftArmPit) && !currentButtons[1])) {
+    if (!(pins.digitalReadPin(pinLeftArmPit))) {
+        if(!currentButtons[1]){
+            ret=true;
+        }
         currentButtons[1] = true
-        ret = true;
 
-    } else if(pins.digitalReadPin(pinLeftArmPit)){
+    } else {
         currentButtons[1] = false
     }
-    if (!(pins.digitalReadPin(pinRightArmPit)) && !currentButtons[2]) {
+    if (!(pins.digitalReadPin(pinRightArmPit))) {
+         if(!currentButtons[2]){
+            ret=true;
+        }       
         currentButtons[2] = true
-        ret=true;
-    } else if(pins.digitalReadPin(pinLeftArmPit)){
+        
+    } else {
         currentButtons[2] = false
     }
-    
     
     return ret;
 }
 function doRightArmpit () {
-    strip.setPixelColor(1, neopixel.colors(NeoPixelColors.Purple))
-    strip.show()
+
    // control.waitMicros(1000000)
     // if(waitForInput(1000000)){return true;}
     redArmpitButtonSound()
@@ -109,6 +119,8 @@ function strip_doors_clear () {
     }
     strip.show()
 }
+// alternative to wait micros, checks for button press during wait
+// returns true if it has been interupted
 function waitForInput (waitTime: number) {
     startTime = input.runningTimeMicros()
     while (startTime + waitTime > input.runningTimeMicros()) {
@@ -129,9 +141,7 @@ function Tremolo (note: number, length: number, rate: number) {
     return false
 }
 function doBigButton () {
- //   strip.setPixelColor(2, neopixel.colors(NeoPixelColors.Red))
- //   strip.show()
- //   control.waitMicros(1000000)
+ 
     pins.digitalWritePin(pin_motors,1)
     pins.digitalWritePin(pin_buttonLED,0)
    
