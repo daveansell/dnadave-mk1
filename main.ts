@@ -451,7 +451,7 @@ let pinLeftArmPit = DigitalPin.P2;
 let pinRightArmPit = DigitalPin.P11;
 serial.writeLine("Started")
 
-let cog_minimum = 0;
+let cog_minimum = 50;
 let maxPotValue = 875;
 let minPotValue = 345;
 let maxValue = 400;
@@ -485,7 +485,7 @@ basic.forever(function () {
         cog_average += 0.7 * (cog_voltage - cog_average) 
             serial.writeNumber(cog_average);
 
-        which_LED = Math.round(Math.map(cog_average-cog_minimum, 0, 1023, 0, strip.length() + 2))
+        which_LED = Math.round(Math.map(cog_average-cog_minimum, 0, maxValue-cog_minimum, 0, strip.length() + 2))
         for (let index5 = 0; index5 <= which_LED; index5++) {
             strip.setPixelColor(index5, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
         }
@@ -510,7 +510,7 @@ basic.forever(function () {
     } else if (Dave_state == 3) {
         success_sound()
         dispense_protein()
-        Dave_state = 0
+        Dave_state = 8
         strip.clear()
         strip.show()
     }
