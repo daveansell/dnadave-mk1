@@ -141,7 +141,8 @@ function Tremolo (note: number, length: number, rate: number) {
     return false
 }
 function doBigButton () {
- 
+    strip.clear();
+    strip.show();
     pins.digitalWritePin(pin_motors,1)
     pins.digitalWritePin(pin_buttonLED,0)
    
@@ -506,7 +507,7 @@ basic.forever(function () {
         }
     } else if (Dave_state == 2) {
         angry_Dave_sound()
-        Dave_state = 0
+        Dave_state = 8
     } else if (Dave_state == 3) {
         success_sound()
         dispense_protein()
